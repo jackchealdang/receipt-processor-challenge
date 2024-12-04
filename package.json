@@ -1,0 +1,25 @@
+{
+  "name": "receipt-processor",
+  "version": "1.0.0",
+  "description": "Fetch Receipt Processor to process receipts!",
+  "main": "index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jackchealdang/receipt-processor-challenge.git"
+  },
+  "author": "Jackcheal Dang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jackchealdang/receipt-processor-challenge/issues"
+  },
+  "homepage": "https://github.com/jackchealdang/receipt-processor-challenge#readme",
+  "dependencies": {
+    "fastify": "^5.1.0"
+  }
+}
