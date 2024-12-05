@@ -4,8 +4,10 @@ const fastify = Fastify({
     logger: true
 })
 
+// Declare and add Schemas
+// Item schema
 fastify.addSchema({
-    $id: 'item',
+    $id: 'Item',
     type: 'object',
     required: ['shortDescription', 'price'],
     properties: {
@@ -14,7 +16,9 @@ fastify.addSchema({
     }
 })
 
-const receiptSchema = {
+// Receipt schema
+fastify.addSchema({
+    $id: 'Receipt',
     type: 'object',
     required: ['retailer','purchaseDate','purchaseTime','items','total'],
     properties: {
@@ -25,26 +29,32 @@ const receiptSchema = {
             type: 'array',
             minItems: 1,
             items: {
-                $ref: 'item#',
+                $ref: 'Item#',
             }
         },
         total: {type: 'string'}
     }
-}
+})
 
+// Body schema
 const schema = {
-    body: receiptSchema
+    body: {
+        $ref: 'Receipt#',
+    }
 }
 
+// Store processed Receipts for current session
 let receipts = {}
 
 // Declare routes
+// Process Receipt
 fastify.post('/receipts/process', { schema }, (request, reply) => {
     const id = crypto.randomUUID()
     receipts[id] = request.body
     return {"id": id}
 })
 
+// Calculate Points for Receipt
 fastify.get('/receipts/:id/points', (request, reply) => {
     return {"points": calculatePoints(receipts[request.params.id])}
 })
@@ -58,11 +68,12 @@ fastify.listen({port: 3000}, async (err, address) => {
     fastify.log.info(`Server listening at ${address}`)
 })
 
+// Calculate points
 function calculatePoints(receipt)
 {
     let points = 0
 
-    // calculate alphanumeric characters
+    // Add points alphanumeric characters
     for (const c of receipt["retailer"]) {
         if (c.match(/[0-9a-zA-Z]/)) {
             points += 1
@@ -71,20 +82,21 @@ function calculatePoints(receipt)
 
     const total = parseFloat(receipt["total"])
 
-    // calculate total is round dollar
+    // Add points if total is a round dollar amount
     if (Number.isInteger(total)) {
         points += 50
     }
 
-    // calculate total is multiple of 0.25
+    // Add points if total is multiple of 0.25
     if (total % 0.25 === 0) {
         points += 25
     }
 
-    // calculate every two items
+    // Add points for every two items 
     points += Math.floor(receipt["items"].length / 2) * 5
 
-    // calculate and add item price
+    // Add points if trimmed item description
+    // is a multiple of 3
     for (let i of receipt["items"]) {
         const desc = i["shortDescription"]
         const price = parseFloat(i["price"])
@@ -95,18 +107,18 @@ function calculatePoints(receipt)
         }
     }
 
-    // calculate odd purchase date
+    // Add points if purchase date is odd
     const [YYYY, MM, DD] = receipt["purchaseDate"].split("-")
     if (DD % 2 == 1) {
         points += 6
     }
 
-    // calculate time between 2:00 PM and 4:00 PM
+    // Add points if purchase time is between 2:00 PM and 4:00 PM
     const [hours, minutes] = receipt["purchaseTime"].split(":").map(Number)
-    // convert hours into minutes of the day
+    // Convert hours into minutes of the day
     const startTime = 14 * 60 // 2:00 PM
-    const endTime = 16 * 60
-    const currTime = hours * 60 + minutes
+    const endTime = 16 * 60 // 4:00 PM
+    const currTime = hours * 60 + minutes // Current time in minutes
     if (startTime < currTime < endTime) {
         points += 10
     }
