@@ -22,6 +22,7 @@ const schema = {
 
 let receipts = {}
 
+// Declare routes
 fastify.post('/receipts/process', { schema }, (request, reply) => {
     const id = crypto.randomUUID()
     receipts[id] = receiptSchema
@@ -31,12 +32,67 @@ fastify.post('/receipts/process', { schema }, (request, reply) => {
 })
 
 fastify.get('/receipts/:id/points', (reply, request) => {
-    return calculatePoints(request.params.id)
+    return calculatePoints(receipts[request.params.id])
 })
 
-function calculatePoints(id)
+// Start server
+fastify.listen({port: 3000}, async (err, address) => {
+    if (err) {
+        fastify.log.error(err)
+        process.exit(1)
+    }
+    fastify.log.info(`Server listening at ${address}`)
+})
+
+function calculatePoints(receipt)
 {
     let points = 0
+
+    // calculate alphanumeric characters
+    for (const c of receipt["retailer"]) {
+        if (c.match(/[^0-9a-zA-Z]/)) {
+            points += 1
+        }
+    }
+
+    const total = parseFloat(receipt["total"])
+
+    // calculate total is round dollar
+    if (Number.isInteger(total)) {
+        points += 50
+    }
+
+    // calculate total is multiple of 0.25
+    if (total % 0.25 === 0) {
+        points += 25
+    }
+
+    // calculate and add item price
+    for (const i of receipt["items"]) {
+        const desc = i["shortDescription"]
+        const price = praseFloat(i["price"])
+        const descLength = i.trim().length
+
+        if (descLength % 3 === 0) {
+            points += Math.ceil(price * 0.2)
+        }
+    }
+
+    // calculate odd purchase date
+    const date = new Date(receipt["purchaseDate"])
+    if (date.getDate() % 2 == 1) {
+        points += 6
+    }
+
+    // calculate time between 2:00 PM and 4:00 PM
+    const [hours, minutes] = receipt["purchaseTime"].split(":").map(Number)
+    // convert hours into minutes of the day
+    const startTime = 14 * 60 // 2:00 PM
+    const endTime = 16 * 60
+    const currTime = hours * 60 + minutes
+    if (startTime < currTime < endTime) {
+        points += 10
+    }
 
     return points
 }
