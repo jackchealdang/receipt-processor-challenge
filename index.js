@@ -41,14 +41,12 @@ let receipts = {}
 // Declare routes
 fastify.post('/receipts/process', { schema }, (request, reply) => {
     const id = crypto.randomUUID()
-    receipts[id] = receiptSchema
-    return {
-        "id": id
-    }
+    receipts[id] = request.body
+    return {"id": id}
 })
 
-fastify.get('/receipts/:id/points', (reply, request) => {
-    return calculatePoints(receipts[request.params.id])
+fastify.get('/receipts/:id/points', (request, reply) => {
+    return {"points": calculatePoints(receipts[request.params.id])}
 })
 
 // Start server
@@ -66,7 +64,7 @@ function calculatePoints(receipt)
 
     // calculate alphanumeric characters
     for (const c of receipt["retailer"]) {
-        if (c.match(/[^0-9a-zA-Z]/)) {
+        if (c.match(/[0-9a-zA-Z]/)) {
             points += 1
         }
     }
@@ -83,11 +81,14 @@ function calculatePoints(receipt)
         points += 25
     }
 
+    // calculate every two items
+    points += Math.floor(receipt["items"].length / 2) * 5
+
     // calculate and add item price
-    for (const i of receipt["items"]) {
+    for (let i of receipt["items"]) {
         const desc = i["shortDescription"]
-        const price = praseFloat(i["price"])
-        const descLength = i.trim().length
+        const price = parseFloat(i["price"])
+        const descLength = desc.trim().length
 
         if (descLength % 3 === 0) {
             points += Math.ceil(price * 0.2)
