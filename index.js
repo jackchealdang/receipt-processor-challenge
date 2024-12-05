@@ -96,8 +96,8 @@ function calculatePoints(receipt)
     }
 
     // calculate odd purchase date
-    const date = new Date(receipt["purchaseDate"])
-    if (date.getDate() % 2 == 1) {
+    const [YYYY, MM, DD] = receipt["purchaseDate"].split("-")
+    if (DD % 2 == 1) {
         points += 6
     }
 
