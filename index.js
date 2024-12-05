@@ -4,6 +4,16 @@ const fastify = Fastify({
     logger: true
 })
 
+fastify.addSchema({
+    $id: 'item',
+    type: 'object',
+    required: ['shortDescription', 'price'],
+    properties: {
+        shortDescription: {type: 'string'},
+        price: {type: 'string'}
+    }
+})
+
 const receiptSchema = {
     type: 'object',
     required: ['retailer','purchaseDate','purchaseTime','items','total'],
@@ -11,7 +21,13 @@ const receiptSchema = {
         retailer: {type: 'string'},
         purchaseDate: {type: 'string'},
         purchaseTime: {type: 'string'},
-        items: {type: 'array'},
+        items: {
+            type: 'array',
+            minItems: 1,
+            items: {
+                $ref: 'item#',
+            }
+        },
         total: {type: 'string'}
     }
 }
