@@ -51,6 +51,9 @@ let receipts = {}
 fastify.post('/receipts/process', { schema }, (request, reply) => {
     const id = crypto.randomUUID()
     receipts[id] = request.body
+    // TODO: move calculating points into process endpoint
+    // TODO: add error handling to both endpoints
+    receipts[id]["points"] = calculatePoints(request.body)
     return {"id": id}
 })
 
