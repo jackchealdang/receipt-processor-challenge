@@ -59,7 +59,7 @@ fastify.post('/receipts/process', { schema }, (request, reply) => {
 
 // Calculate Points for Receipt
 fastify.get('/receipts/:id/points', (request, reply) => {
-    return {"points": calculatePoints(receipts[request.params.id])}
+    return {"points": receipts[id]["points"]}
 })
 
 // Start server
