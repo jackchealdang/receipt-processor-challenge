@@ -13,7 +13,11 @@ while True:
         print(f"{key} -- {val}")
     print()
     
-    inp = int(input())
+    try:
+        inp = int(input())
+    except:
+        print("\nPlease enter a valid NUMBER choice from the menu.\n")
+        continue
 
     if inp == 0:
         print("\nInput Receipt JSON. Enter 0 to go back.\n")
@@ -37,3 +41,5 @@ while True:
         print()
     elif inp == 2:
         break
+    else:
+        print("\nPlease enter a valid selection from the menu.\n")

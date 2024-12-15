@@ -49,21 +49,37 @@ let receipts = {}
 // Declare routes
 // Process Receipt
 fastify.post('/receipts/process', { schema }, (request, reply) => {
-    const id = crypto.randomUUID()
-    receipts[id] = request.body
-    // TODO: move calculating points into process endpoint
-    // TODO: add error handling to both endpoints
-    receipts[id]["points"] = calculatePoints(request.body)
-    return {"id": id}
+    try {
+        const id = crypto.randomUUID()
+        receipts[id] = request.body
+        receipts[id]["points"] = calculatePoints(request.body)
+        reply
+            .code(200)
+            .header('Content-Type', 'application/json')
+            .send({"id": id})
+    } catch (err) {
+        reply
+            .code(400)
+            .send({"BadRequest": "The receipt is invalid."})
+    }
 })
 
 // Calculate Points for Receipt
 fastify.get('/receipts/:id/points', (request, reply) => {
-    return {"points": receipts[id]["points"]}
+    try {
+        reply
+            .code(200)
+            .header('Content-Type', 'application/json')
+            .send({"points": receipts[request.params.id]["points"]})
+    } catch (err) {
+        reply
+            .code(404)
+            .send({"NotFound": "No receipt found for that ID."})
+    }
 })
 
 // Start server
-fastify.listen({port: 3000}, async (err, address) => {
+fastify.listen({port: 3000, host: '0.0.0.0'}, async (err, address) => {
     if (err) {
         fastify.log.error(err)
         process.exit(1)
