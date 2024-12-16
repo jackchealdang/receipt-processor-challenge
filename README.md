@@ -1,8 +1,8 @@
-### About the project
+## About the project
 
 This is a project to process receipts. It's using Fastify as the backend, with a Python script to test the endpoints.
 
-### How to run
+## How to run
 
 1. Build image
 
@@ -15,9 +15,9 @@ docker build -t receipt-processor .
 docker run -p 3000:3000 receipt-processor
 ```
 
-3. Test the endpoints
+## Test the endpoints
 
-#### Using Python
+### Using Python
 
 You can easily test the endpoints using the Python script I created.
 
@@ -31,7 +31,7 @@ python test.py
 1 - Use the receipt ID received from `0` and paste it here
 2 - Exit
 
-#### Using cURL
+### Using cURL
 
 ```
 curl --header "Content-Type: application/json" \
