@@ -24,13 +24,16 @@ You can easily test the endpoints using the Python script I created.
 
 ```
 python test.py
-
 ```
 
+**0 - Paste the receipt JSON here and you will receive a receipt ID if it's valid  
+1 - Use the receipt ID received from `0` and paste it here  
+2 - Exits the test suite**  
+  
+  
 0 - Paste the receipt JSON here and you will receive a receipt ID if it's valid  
 
-#### Example JSON receipt input
-**Paste as one line**
+#### Example JSON receipt input (paste as one line)
 
 ```
 {
