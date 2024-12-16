@@ -27,9 +27,9 @@ python test.py
 
 ```
 
-0 - Paste the receipt JSON here and you will receive a receipt ID if it's valid
-1 - Use the receipt ID received from `0` and paste it here
-2 - Exit
+0 - Paste the receipt JSON here and you will receive a receipt ID if it's valid  
+1 - Use the receipt ID received from `0` and paste it here  
+2 - Exit  
 
 ### Using cURL
 
